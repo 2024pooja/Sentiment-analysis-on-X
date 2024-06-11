@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #1DA1F2; /* Twitter blue */
+            background-blend-mode: overlay; /* Blend texture with background color */
+            background-repeat: repeat; /* Repeat texture */
+        }
+        #upper-frame {
+            position: fixed; /* Position the upper frame relative to the viewport */
+            top: 0; /* Align the upper frame to the top of the viewport */
+            width: 100%;
+            /*background-color: rgba(255, 255, 255, 0.8); /* Adjust opacity as needed */
+            text-align: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px; /* Add margin to separate upper frame from content */
+        }
+        #container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8); /* Adjust opacity as needed */
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        #twitter-icon {
+            width: 100px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        h1 {
+            color: #1DA1F2; /* Twitter blue */
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 300px;
+            margin-bottom: 10px;
+        }
+        #upper-frame h1 {
+            color: rgba(255, 255, 255, 0.8); 
+            margin: 0;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #1DA1F2; /* Twitter blue */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0F81C7; /* Darker shade of Twitter blue */
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #1DA1F2; /* Twitter blue */
+        }
+        #twitter-icon {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="upper-frame">
+        <img src="twitter.png" id="twitter-icon" alt="Twitter Icon"> <!-- Replace 'twitter_icon.png' with your Twitter icon image -->
+        <h1>Review on Self Harm</h1>
+    </div>
+    <div id="container">
+        <h1>Sentiment Analysis</h1>
+        <input type="text" id="user_handle" placeholder="Enter Twitter handle">
+        <button onclick="analyzeTweets()">Analyze Tweets</button>
+        <div id="result"></div>
+    </div>
+    <script>
+        async function analyzeTweets() {
+            const userHandle = document.getElementById('user_handle').value;
+            if (userHandle.trim() === '') {
+                alert('Please enter a Twitter handle.');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/analyze_tweets_average', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_handle: userHandle })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('result').textContent = `Sentiment for ${data.user_handle}'s tweets: ${data.sentiment}`;
+                }
+            } catch (error) {
+                console.error('Error analyzing tweets:', error);
+                alert('An error occurred while analyzing tweets. Please try again later.');
+            }
+        }
+    </script>
+</body>
+</html>
